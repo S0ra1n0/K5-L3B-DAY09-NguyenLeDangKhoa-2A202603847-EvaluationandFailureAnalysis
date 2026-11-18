@@ -15,7 +15,7 @@
 - Môi trường đo: MockLLM, eval set v1 (14 item × 5 seed, sha `806fa834655a`). **Chưa** đo trên người dùng thật.
 
 ## 3. Định nghĩa "chạy đúng" (trích metric_spec, điền giá trị thật)
-Baseline: `E-swarm-20261118-806f` (`src/reports/baseline_v1.json`), metric_spec `1.0`.
+Baseline: `E-swarm-20261118-806f` (`src/reports/baseline_v1.json`), metric_spec `1.1` (1.0 + metric `quote_not_altered`; không nới ngưỡng nào).
 
 | Metric | Loại | Ngưỡng | Chặn release? | Baseline (run ID) |
 |---|---|---|---|---|
@@ -24,6 +24,7 @@ Baseline: `E-swarm-20261118-806f` (`src/reports/baseline_v1.json`), metric_spec 
 | refund_amount_correct | năng lực | ≥ 0.95 và không giảm có ý nghĩa | có | 0.9857 (`E-swarm-20261118-806f`) |
 | pass_rate | năng lực | ≥ 0.85 và không giảm có ý nghĩa | có | 0.9857 (`E-swarm-20261118-806f`) |
 | db_fact_kept | năng lực (mức bước) | ≥ 0.95 | không (cảnh báo) | 0.9857 (`E-swarm-20261118-806f`) |
+| quote_not_altered (FM-04/05) | năng lực (mức bước) | = 1.0 | không (cảnh báo) | 1.0 (`E-swarm-20261118-806f`) |
 | pass_5, cost_per_success | theo dõi | pass_5 ≥ 0.80; cost tăng ≤ 10% | không | pass_5 0.9286; cost 49.567 (`E-swarm-20261118-806f`) |
 | reply_amount_matches_ledger (FM-08) | năng lực | = 1.0 và không giảm có ý nghĩa | có | 1.0 (`E-swarm-20261118-806f`) |
 
@@ -64,6 +65,7 @@ Quy tắc: tiền và phê duyệt luôn chấm bằng code. Judge chỉ dùng c
 ## 7. Khi nào lên v1.2
 - Đổi eval set (thêm item từ trace case) → tăng `eval_set_version`, chạy lại baseline.
 - Đổi ngưỡng hoặc metric → tăng `metric_spec_version`, ghi lý do ở đây.
+  - 2026-11-18, metric_spec 1.0 → 1.1: thêm `quote_not_altered` (mức bước, không blocking) vì `python -m lab9.mutation --detect` chỉ giải thích được 75% trial `seeded_regression` fail (C-013 pre_deducted bị sót); sau khi thêm: 100%, báo nhầm 0%. Không ngưỡng nào bị nới.
 
 ## Phê duyệt
 | Vai trò | Tên | Ngày |

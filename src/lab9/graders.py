@@ -103,6 +103,23 @@ class ReplyMatchesLedger(Evaluator[Any, Trial]):
                                 reason=f"reply says {wrong[0]} but ledger holds {ledger}" if wrong else None)
 
 
+@dataclass
+class QuoteNotAltered(Evaluator[Any, Trial]):
+    """Step level (FM-04 / FM-05). autonomy_policy.yaml: model.may_compute_money is false -- the money comes from
+    the host quote. Fails when the trace shows the agent proposing an amount different from the latest quote
+    (summing clauses, rounding, deducting earlier refunds itself), even if the host later caps it back."""
+
+    def evaluate(self, ctx: EvaluatorContext[Any, Trial]) -> EvaluationReason:
+        quoted = None
+        for e in ctx.output.get("events") or []:
+            payload = e.get("payload") or {}
+            if e.get("kind") == "quote" and "amount_vnd" in payload:
+                quoted = int(payload["amount_vnd"])
+            elif e.get("kind") == "proposal" and quoted is not None and int(payload.get("amount_vnd", quoted)) != quoted:
+                return EvaluationReason(value=False, reason=f"proposal {payload.get('amount_vnd')} != quote {quoted}")
+        return EvaluationReason(value=True)
+
+
 # Order matters only for display. Names here are the metric ids in config/metric_spec.yaml.
 GRADERS: dict[str, type[Evaluator]] = {
     "pass_rate": TrialPass,
@@ -111,4 +128,5 @@ GRADERS: dict[str, type[Evaluator]] = {
     "refund_amount_correct": RefundAmountCorrect,
     "db_fact_kept": DbFactKept,
     "reply_amount_matches_ledger": ReplyMatchesLedger,
+    "quote_not_altered": QuoteNotAltered,
 }
