@@ -1,0 +1,3 @@
+# eval_set_sha is a hash of the file bytes: keep eval data LF on every OS (Windows autocrlf would change the sha).
+src/data/eval/*.jsonl text eol=lf
+src/data/eval/*.json text eol=lf
