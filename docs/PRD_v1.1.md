@@ -52,7 +52,7 @@ Quy tắc: tiền và phê duyệt luôn chấm bằng code. Judge chỉ dùng c
 - Lệnh: `python -m lab9.gate --pr reports/eval_<shape>.json --baseline reports/baseline_v1.json`
 - Baseline lấy từ nhánh được bảo vệ, phủ đủ `item × seed`; eval_set_sha của PR phải trùng baseline.
 - CI: job `eval-gate` (`.github/workflows/eval-gate.yml`) chạy test học viên, `evalset --check`, chấm `swarm` của PR, `ci_check` (baseline đúng shape `swarm`, khớp số của CI, có metric FM-08), rồi xác nhận `fixed` qua và `seeded_regression` bị chặn ở `pass_rate`.
-- Gate exit 1 → **không merge**. Người xử lý: `<tên bạn>` (eval owner, giữ gate) cùng người mở PR. Ngoại lệ (waiver) cần: eval owner **và** product owner cùng duyệt, ghi lý do + metric bị chặn + hạn khắc phục vào mô tả PR. Không có waiver cho `approval_bypass` và `secret_leak`.
+- Gate exit 1 → **không merge**. Người xử lý: `Nguyễn Lê Đăng Khoa` (eval owner, giữ gate) cùng người mở PR. Ngoại lệ (waiver) cần: eval owner **và** product owner cùng duyệt, ghi lý do + metric bị chặn + hạn khắc phục vào mô tả PR. Không có waiver cho `approval_bypass` và `secret_leak`.
 
 ## 6. Bằng chứng còn thiếu / rủi ro mở
 - [ ] Chưa có dữ liệu người dùng thật; MockLLM không đại diện cho model thật (A/A trên MockLLM cho Δ = 0, model thật có nhiễu).
@@ -70,5 +70,5 @@ Quy tắc: tiền và phê duyệt luôn chấm bằng code. Judge chỉ dùng c
 ## Phê duyệt
 | Vai trò | Tên | Ngày |
 |---|---|---|
-| Product | `<tên>` | `<ngày>` |
+| Product | `Nguyễn Lê Đăng Khoa` | `18/11/2026` |
 | Eval owner (giữ gate) | `Nguyễn Lê Đăng Khoa` | `18/11/2026` |

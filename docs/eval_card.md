@@ -4,7 +4,7 @@ Card này đi kèm mỗi báo cáo và được dùng lại ở Day 10. Mọi s�
 (`src/reports/*.json`, commit bằng `git add -f`), không gõ tay.
 
 - **Run ID / eval set SHA:** baseline `E-swarm-20261118-806f` · PR đối chứng `E-fixed-20261118-806f`, `E-seeded_regression-20261118-806f` · eval set sha `806fa834655a`
-- **Phiên bản:** code: nhánh `starter` (base `e830b04` + thay đổi M1–M4 trong PR này) · eval set v1 (sha `806fa834655a`, file LF, xem `.gitattributes`) · metric_spec `1.1` (`src/config/metric_spec.yaml`; 1.1 chỉ thêm `quote_not_altered`, không nới ngưỡng nào) · grader `src/lab9/graders.py` cùng commit · seeds 11/22/33/44/55 · MockLLM · Python 3.12.10 (máy) / 3.13 (CI)
+- **Phiên bản:** code: nhánh `main` (Core M1–M4: PR #1 `25a2770`; Advanced M5–M6: PR #2 `befce18`; Expert M7: PR #3 `5cf843b`; base Day 8 `e830b04`) · eval set v1 (sha `806fa834655a`, file LF, xem `.gitattributes`) · metric_spec `1.1` (`src/config/metric_spec.yaml`; 1.1 chỉ thêm `quote_not_altered`, không nới ngưỡng nào) · grader `src/lab9/graders.py` cùng commit · seeds 11/22/33/44/55 · MockLLM · Python 3.12.10 (máy) / 3.13 (CI)
 - **Eval set:** v1, 14 item × 5 seed = 70 trial, nguồn `lab8_public` (T01–T14); nhãn tách riêng ở `labels_v1.json`; mỗi item có `failure_modes` (FM-01…FM-09, xem `docs/failure_taxonomy.md`) và provenance (`label_by: lab8_matrix`, `checked_by: fixed_shape_replay`, `fixed` khớp nhãn 70/70)
 - **Metric & ngưỡng** (trích `metric_spec.yaml`):
 
