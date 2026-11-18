@@ -4,7 +4,7 @@ Card này đi kèm mỗi báo cáo và được dùng lại ở Day 10. Mọi s�
 (`src/reports/*.json`, commit bằng `git add -f`), không gõ tay.
 
 - **Run ID / eval set SHA:** baseline `E-swarm-20261118-806f` · PR đối chứng `E-fixed-20261118-806f`, `E-seeded_regression-20261118-806f` · eval set sha `806fa834655a`
-- **Phiên bản:** code: nhánh `starter` (base `e830b04` + thay đổi M1–M4 trong PR này) · eval set v1 (sha `806fa834655a`, file LF, xem `.gitattributes`) · metric_spec `1.0` (`src/config/metric_spec.yaml`) · grader `src/lab9/graders.py` cùng commit · seeds 11/22/33/44/55 · MockLLM · Python 3.12.10 (máy) / 3.13 (CI)
+- **Phiên bản:** code: nhánh `starter` (base `e830b04` + thay đổi M1–M4 trong PR này) · eval set v1 (sha `806fa834655a`, file LF, xem `.gitattributes`) · metric_spec `1.1` (`src/config/metric_spec.yaml`; 1.1 chỉ thêm `quote_not_altered`, không nới ngưỡng nào) · grader `src/lab9/graders.py` cùng commit · seeds 11/22/33/44/55 · MockLLM · Python 3.12.10 (máy) / 3.13 (CI)
 - **Eval set:** v1, 14 item × 5 seed = 70 trial, nguồn `lab8_public` (T01–T14); nhãn tách riêng ở `labels_v1.json`; mỗi item có `failure_modes` (FM-01…FM-09, xem `docs/failure_taxonomy.md`) và provenance (`label_by: lab8_matrix`, `checked_by: fixed_shape_replay`, `fixed` khớp nhãn 70/70)
 - **Metric & ngưỡng** (trích `metric_spec.yaml`):
 
@@ -16,6 +16,7 @@ Card này đi kèm mỗi báo cáo và được dùng lại ở Day 10. Mọi s�
 | `pass_rate` | capability | min 0.85 + không giảm có ý nghĩa | có |
 | `reply_amount_matches_ledger` (FM-08) | capability | min 1.0 + không giảm có ý nghĩa | có |
 | `db_fact_kept` | capability (bước) | min 0.95 | không (warn) |
+| `quote_not_altered` (FM-04/05) | capability (bước) | min 1.0 | không (warn) |
 | `pass_5` | capability | min 0.80 | không (warn) |
 | `cost_per_success` | system | tăng tối đa 10% | không (warn) |
 
@@ -31,6 +32,7 @@ Card này đi kèm mỗi báo cáo và được dùng lại ở Day 10. Mọi s�
 | pass_rate | 0.9857 | 1.0 | +0.014 [+0.000, +0.043] | 0.7143 | **−0.271 [−0.500, −0.057] BLOCK** (dưới sàn và CI < 0) |
 | reply_amount_matches_ledger | 1.0 | 1.0 | +0.000 [+0.000, +0.000] | 0.7857 | −0.214 [−0.429, +0.000] **BLOCK** (dưới sàn) |
 | db_fact_kept | 0.9857 | 1.0 | — | 0.9286 | warn |
+| quote_not_altered | 1.0 | 1.0 | — | 0.8571 | warn |
 | pass_5 | 0.9286 | 1.0 | — | 0.7143 | warn |
 | cost_per_success (VND mô phỏng) | 49.567 | 48.7157 | — | 81.202 | warn (+64%) |
 | **Gate** | — | **exit 0, merge** | | **exit 1, blocked: refund_amount_correct, pass_rate, reply_amount_matches_ledger** | |
