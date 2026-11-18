@@ -12,28 +12,50 @@ from collections.abc import Sequence
 POS = "FAIL"   # the judge's job is to FIND failures, so FAIL is the positive class
 
 
+def _norm(label: str) -> str:
+    return str(label).strip().upper()
+
+
 def confusion(human: Sequence[str], judge: Sequence[str]) -> dict[str, int]:
     """tp/fp/fn/tn with FAIL as positive."""
-    # TODO M2
-    raise NotImplementedError
+    if len(human) != len(judge):
+        raise ValueError(f"length mismatch: {len(human)} human vs {len(judge)} judge labels")
+    cm = {"tp": 0, "fp": 0, "fn": 0, "tn": 0}
+    for h, j in zip(human, judge):
+        h_pos, j_pos = _norm(h) == POS, _norm(j) == POS
+        cm[("t" if h_pos == j_pos else "f") + ("p" if j_pos else "n")] += 1
+    return cm
 
 
 def precision_recall(human: Sequence[str], judge: Sequence[str]) -> tuple[float, float]:
-    # TODO M2: precision = tp/(tp+fp), recall = tp/(tp+fn); return 0.0 when the denominator is 0
-    raise NotImplementedError
+    cm = confusion(human, judge)
+    p = cm["tp"] / (cm["tp"] + cm["fp"]) if cm["tp"] + cm["fp"] else 0.0
+    r = cm["tp"] / (cm["tp"] + cm["fn"]) if cm["tp"] + cm["fn"] else 0.0
+    return p, r
 
 
 def cohen_kappa(human: Sequence[str], judge: Sequence[str]) -> float:
     """kappa = (p_o - p_e) / (1 - p_e). Raise ValueError when undefined (p_e == 1):
     a constant judge has no signal and must FAIL calibration, not pass on a technicality."""
-    # TODO M2
-    raise NotImplementedError
+    cm = confusion(human, judge)
+    n = sum(cm.values())
+    if n == 0:
+        raise ValueError("kappa undefined: no labels")
+    p_o = (cm["tp"] + cm["tn"]) / n
+    human_pos, judge_pos = (cm["tp"] + cm["fn"]) / n, (cm["tp"] + cm["fp"]) / n
+    p_e = human_pos * judge_pos + (1 - human_pos) * (1 - judge_pos)
+    if p_e >= 1.0:
+        raise ValueError("kappa undefined: chance agreement p_e == 1 (constant labels)")
+    return (p_o - p_e) / (1 - p_e)
 
 
 def rogan_gladen(observed_rate: float, sensitivity: float, specificity: float) -> float:
     """Correct an observed failure rate for judge error; clip to [0, 1]."""
-    # TODO M2: (p_obs + spec - 1) / (sens + spec - 1)
-    raise NotImplementedError
+    denom = sensitivity + specificity - 1
+    if denom <= 0:
+        # Youden's J <= 0: the judge is no better than chance, the observed rate carries no information.
+        raise ValueError(f"Rogan-Gladen undefined: sensitivity + specificity - 1 = {denom:.3f} <= 0")
+    return min(1.0, max(0.0, (observed_rate + specificity - 1) / denom))
 
 
 def paired_bootstrap(a: Sequence[float], b: Sequence[float], *, n_resamples: int = 1000,
@@ -41,8 +63,27 @@ def paired_bootstrap(a: Sequence[float], b: Sequence[float], *, n_resamples: int
     """a[i], b[i] = per-item mean over seeds, SAME items, SAME order.
     Return (mean(a)-mean(b), lo, hi) with scipy.stats.bootstrap(paired=True, method="percentile",
     rng=numpy.random.default_rng(rng)). If a == b everywhere return (0.0, 0.0, 0.0)."""
-    # TODO M4
-    raise NotImplementedError
+    import numpy as np
+    from scipy.stats import bootstrap
+
+    x, y = np.asarray(a, dtype=float), np.asarray(b, dtype=float)
+    if x.shape != y.shape:
+        raise ValueError(f"paired bootstrap needs the same items: {x.shape} vs {y.shape}")
+    if x.size == 0:
+        raise ValueError("paired bootstrap needs at least one item")
+    if np.array_equal(x, y):
+        return 0.0, 0.0, 0.0
+    diff = float(np.mean(x) - np.mean(y))
+    if x.size == 1:
+        return diff, diff, diff     # one item: nothing to resample
+    res = bootstrap((x, y), lambda u, v, axis=-1: np.mean(u, axis=axis) - np.mean(v, axis=axis),
+                    paired=True, vectorized=True, n_resamples=n_resamples, confidence_level=confidence,
+                    method="percentile", rng=np.random.default_rng(rng))
+    lo, hi = float(res.confidence_interval.low), float(res.confidence_interval.high)
+    if not (np.isfinite(lo) and np.isfinite(hi)):
+        # every resample gave the same difference (all per-item gaps equal): the CI collapses to it
+        lo = hi = diff
+    return diff, lo, hi
 
 
 def pass_at_k(n: int, c: int, k: int) -> float:
